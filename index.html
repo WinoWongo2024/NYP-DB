@@ -18,6 +18,7 @@
             --color-error: #f44336; /* Red for denied/critical */
             --color-text: #f0f8ff;
             --color-mono: 'Consolas', 'Courier New', monospace;
+            --touch-padding: 15px; /* Large touch targets for iPhone 15 Pro Max */
         }
 
         body {
@@ -27,7 +28,8 @@
             margin: 0;
             padding: 0;
             line-height: 1.6;
-            overflow-x: hidden; /* Prevent horizontal scrolling on mobile */
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent; /* Clean touch response */
         }
 
         /* HEADER & FOOTER */
@@ -36,12 +38,14 @@
             padding: 15px 0;
             text-align: center;
             border-bottom: 3px solid var(--color-accent);
+            position: relative; /* New: Essential for absolute logo positioning */
+            padding-right: 100px; /* Ensure space for the top-right logo */
         }
 
         header h1 {
             color: var(--color-accent);
             margin: 0;
-            font-size: 1.4em; /* Optimized for mobile */
+            font-size: 1.4em;
         }
 
         header h2 {
@@ -51,12 +55,29 @@
             font-weight: normal;
         }
 
+        /* Logo Base Style (Centered for PIN Screen) */
         .logo {
-            width: 50px; /* Small and sharp */
+            width: 50px;
             height: auto;
             margin-bottom: 8px;
-            /* Simple monochrome filter for professional terminal look */
+            /* Filter applied to match the initial 'offline' state */
             filter: grayscale(100%) brightness(150%); 
+            transition: all 0.5s ease;
+        }
+
+        /* NEW: Top Right Positioning for Logged-In Screens */
+        .logo-top-right {
+            position: absolute;
+            top: 5px;
+            right: 15px;
+            width: 75px; /* Larger for better visibility */
+            height: 75px;
+            margin: 0;
+            border: 1px solid var(--color-accent);
+            padding: 5px;
+            background-color: var(--color-bg);
+            border-radius: 4px;
+            filter: none; /* Remove filter for active system state */
         }
 
         footer {
@@ -71,24 +92,21 @@
             text-align: center;
             border-top: 1px solid var(--color-success);
             z-index: 100;
+            transition: color 0.3s;
         }
 
-        /* UTILITIES */
-        .hidden {
-            display: none !important;
-        }
-        .error {
-            color: var(--color-error);
-            font-weight: bold;
-        }
+        /* UTILITIES & SCREENS */
+        .hidden { display: none !important; }
+        .error { color: var(--color-error); font-weight: bold; }
         .status-active { color: var(--color-success); }
         .status-closed { color: var(--color-error); }
         .status-unconfirmed { color: var(--color-accent); }
+        
         .terminal-screen {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 85vh; /* Account for fixed footer */
+            min-height: 85vh;
             padding: 20px;
         }
         .terminal-box {
@@ -99,16 +117,16 @@
             text-align: center;
             box-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
             width: 90%;
-            max-width: 400px; /* Max width for desktop viewing */
+            max-width: 400px;
         }
 
-        /* INPUTS & BUTTONS (Mobile-Friendly Touch Targets) */
+        /* INPUTS & BUTTONS */
         input[type="text"], input[type="password"] {
             padding: 12px;
             margin: 10px 0 20px 0;
             border: 1px solid #4a5c6e;
             background-color: var(--color-bg);
-            color: var(--color-success); /* Input text is green */
+            color: var(--color-success);
             width: 90%;
             box-sizing: border-box;
             text-align: center;
@@ -118,7 +136,7 @@
         button {
             background-color: var(--color-success);
             color: var(--color-terminal);
-            padding: 15px; /* Large touch target */
+            padding: var(--touch-padding);
             border: none;
             cursor: pointer;
             font-weight: bold;
@@ -134,21 +152,16 @@
         .back-button, .close-file-button {
             background-color: var(--color-error);
         }
-        .back-button:hover, .close-file-button:hover {
-            background-color: #ff6a6a;
-            box-shadow: 0 0 10px var(--color-error);
-        }
-
-        /* CASE INDEX / RECORDS GRID */
+        
+        /* LAYOUTS */
         .case-grid {
             display: grid;
-            grid-template-columns: 1fr; /* Single column on mobile */
+            grid-template-columns: 1fr;
             gap: 15px;
             padding: 20px;
             max-width: 900px;
             margin: 0 auto;
         }
-
         .case-card, .record-card {
             background-color: var(--color-terminal);
             border: 1px solid var(--color-accent);
@@ -158,65 +171,20 @@
             text-align: left;
             border-radius: 6px;
         }
-
-        .case-card:hover, .record-card:hover {
-            background-color: #2a3c50;
-            box-shadow: 0 0 10px var(--color-accent);
-        }
-
-        .case-card h4, .record-card h4 {
-            color: var(--color-accent);
-            margin-top: 0;
-            border-bottom: 1px dashed #4a5c6e;
-            padding-bottom: 5px;
-            font-size: 1.1em;
-        }
-
-        .case-card p, .record-card p {
-            font-size: 0.85em;
-            margin: 5px 0;
-        }
         
-        /* CASE/RECORDS/LOG FILE VIEWER */
+        /* VIEWER & CONTENT */
         .file-viewer {
-            padding-bottom: 50px; /* Space for fixed footer */
+            padding-bottom: 50px;
             padding-top: 15px;
         }
         .file-header {
             display: flex;
-            flex-direction: column; /* Stack vertically on mobile */
+            flex-direction: column; 
             background-color: #2a3c50;
             padding: 10px;
             border-bottom: 2px solid var(--color-accent);
             margin-bottom: 15px;
         }
-
-        .ref-block, .officer-block {
-            line-height: 1.2;
-            margin-bottom: 8px;
-        }
-        
-        .close-file-button {
-            width: 90%;
-            margin: 10px auto;
-        }
-        
-        #file-content h3 {
-            color: var(--color-success);
-            border-left: 3px solid var(--color-success);
-            padding-left: 10px;
-            margin-top: 25px;
-            font-size: 1em;
-        }
-
-        .evidence-link {
-            color: var(--color-accent);
-            text-decoration: none;
-            font-weight: bold;
-            margin-left: 10px;
-            font-size: 0.9em;
-        }
-
         .log-entry {
             border-bottom: 1px dashed #4a5c6e;
             padding: 8px 0;
@@ -224,35 +192,20 @@
             display: flex;
             justify-content: space-between;
         }
-        .log-entry span:first-child { color: var(--color-accent); }
-        .log-entry span:last-child { font-style: italic; }
-
+        
         /* Media Query for larger screens (e.g., tablet/desktop) */
         @media (min-width: 768px) {
-            .case-grid {
-                grid-template-columns: repeat(3, 1fr); /* 3 columns on tablet/desktop */
-            }
-            .file-header {
-                flex-direction: row;
-                justify-content: space-between;
-            }
-            .close-file-button {
-                width: auto;
-                margin: 0;
-            }
-            header h1 {
-                font-size: 2em;
-            }
-            header h2 {
-                font-size: 1.2em;
-            }
+            .case-grid { grid-template-columns: repeat(3, 1fr); }
+            .file-header { flex-direction: row; justify-content: space-between; align-items: center;}
+            .close-file-button { width: auto; margin: 0; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <img src="https://placehold.co/50x50/ffc107/1e2d40?text=NYP" alt="North Yorkshire Police Logo" class="logo">
+    <header id="main-header">
+        <!-- Logo Source updated to reflect IMG_0749.png and given an ID for manipulation -->
+        <img id="nyp-logo" src="https://placehold.co/75x75/ffc107/1e2d40?text=NYP%0A(IMG_0749)" alt="NYP/Velic Crown Logo" class="logo">
         <h1>NYP / ÖestVèl CID</h1>
         <h2 id="screen-title">SECURE OPERATIONS TERMINAL</h2>
     </header>
@@ -264,7 +217,7 @@
             <hr>
             <p>ENTER DCI SYSTEM ACCESS PIN</p>
             <label for="system-code">PIN (7 Digits):</label>
-            <input type="password" id="system-code" maxlength="7" placeholder="_______" onkeyup="checkTerminalCode(event)">
+            <input type="password" id="system-code" maxlength="7" placeholder="_______" onkeyup="window.checkTerminalCode(event)">
             <p id="terminal-message" class="error"></p>
         </div>
     </div>
@@ -272,11 +225,11 @@
     <!-- LAYER 2: MAIN MENU / CASE INDEX -->
     <div id="main-menu" class="file-viewer hidden">
         <div class="file-header">
-            <h3 style="color:var(--color-accent); margin:0;">MAIN MENU $\rightarrow$ INVESTIGATIONS</h3>
+            <h3 style="color:var(--color-accent); margin:0;">MAIN MENU &rarr; INVESTIGATIONS</h3>
             <div>
-                <button onclick="showRecordsTerminal()">SUSPECT RECORDS</button>
-                <button onclick="showAuditLogTerminal()">AUDIT LOG</button>
-                <button class="close-file-button" onclick="logOutUser()">LOGOUT</button>
+                <button onclick="window.showRecordsTerminal()">SUSPECT RECORDS</button>
+                <button onclick="window.showAuditLogTerminal()">AUDIT LOG</button>
+                <button class="close-file-button" onclick="window.logOutUser()">LOGOUT</button>
             </div>
         </div>
         <main class="case-grid" id="case-grid">
@@ -287,8 +240,8 @@
     <!-- LAYER 3: SUSPECT RECORDS TERMINAL -->
     <div id="records-terminal" class="file-viewer hidden">
         <div class="file-header">
-            <h3 style="color:var(--color-accent); margin:0;">MAIN MENU $\rightarrow$ SUSPECT/PERSONS RECORDS (PINS)</h3>
-            <button class="back-button-top" onclick="showMainMenu()">BACK TO MENU</button>
+            <h3 style="color:var(--color-accent); margin:0;">MAIN MENU &rarr; SUSPECT/PERSONS RECORDS (PINS)</h3>
+            <button class="back-button-top" onclick="window.showMainMenu()">BACK TO MENU</button>
         </div>
         <main class="case-grid" id="records-grid">
             <!-- Records will be injected here -->
@@ -298,10 +251,10 @@
     <!-- LAYER 4: AUDIT LOG TERMINAL -->
     <div id="audit-log-terminal" class="file-viewer hidden">
         <div class="file-header">
-            <h3 style="color:var(--color-accent); margin:0;">MAIN MENU $\rightarrow$ SYSTEM AUDIT LOG</h3>
-            <button class="back-button-top" onclick="showMainMenu()">BACK TO MENU</button>
+            <h3 style="color:var(--color-accent); margin:0;">MAIN MENU &rarr; SYSTEM AUDIT LOG</h3>
+            <button class="back-button-top" onclick="window.showMainMenu()">BACK TO MENU</button>
         </div>
-        <div style="padding: 20px;" id="audit-log-content">
+        <div style="padding: 0 20px;" id="audit-log-content">
             <!-- Logs will be injected here -->
         </div>
     </div>
@@ -317,7 +270,7 @@
                 <p>Investigating Officer: <span id="file-officer-display"></span></p>
                 <p>Time (OVST): <span id="current-time"></span></p>
             </div>
-            <button class="close-file-button" onclick="showMainMenu()">CLOSE FILE</button>
+            <button class="close-file-button" onclick="window.showMainMenu()">CLOSE FILE</button>
         </div>
         <section style="padding: 0 20px;" id="file-content">
             <!-- Case content loaded dynamically here -->
@@ -325,20 +278,17 @@
     </div>
     
     <footer>
-        <p>CONFIDENTIAL | SYSTEM LOG: <span id="system-log">SYSTEM OFFLINE</span></p>
+        <p>CONFIDENTIAL | SYSTEM LOG: <span id="system-log">SYSTEM OFFLINE. AWAITING DCI PIN.</span></p>
     </footer>
 
     <!-- Firebase Imports (MUST use type="module" for ES6 modules) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, query, serverTimestamp, orderBy, limit, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, query, serverTimestamp, orderBy, limit, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // setLogLevel('debug'); // Uncomment for detailed debug logs
-
         // --- GLOBAL CONFIG & INITIALIZATION ---
-        const SYSTEM_PIN = "1936203"; // DCI System Access PIN
+        const SYSTEM_PIN = "1936203"; // DCI System Access PIN (19:36 BST / 20:36 CEST for the OD)
         const CASE_PASSWORDS = {
             "PROXY-001": "MILLIE66", 
             "VELIC-002": "TRANSF3R" 
@@ -350,7 +300,9 @@
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         
         let casesCollectionRef, suspectsCollectionRef, logCollectionRef;
-        let activeCaseRef = null;
+        let allCases = [];
+        let allSuspects = [];
+        let auditLog = [];
 
         // --- DATA TEMPLATES ---
         const initialCaseData = {
@@ -371,7 +323,6 @@
                     `},
                 ]
             }
-            // Add more default cases here if needed
         };
 
         const initialSuspectsData = {
@@ -386,9 +337,10 @@
             }
         };
 
+
         // --- AUTH & FIRESTORE SETUP ---
 
-        async function initializeFirebase() {
+        async function initializeFirebaseAndListeners() {
             if (!firebaseConfig) {
                 console.error("Firebase config is missing.");
                 return;
@@ -397,17 +349,19 @@
             db = getFirestore(app);
             auth = getAuth(app);
 
-            // Authentication logic
-            if (initialAuthToken) {
-                await signInWithCustomToken(auth, initialAuthToken)
-                    .catch(e => {
-                        console.error("Custom token sign-in failed. Falling back to anonymous.", e);
-                        signInAnonymously(auth);
-                    });
-            } else {
-                await signInAnonymously(auth);
+            // 1. Authenticate
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (e) {
+                console.error("Authentication failed:", e);
+                updateSystemLog('CRITICAL: Auth Failure.', true);
+                return;
             }
-            
+
             // Wait for auth state to be resolved
             await new Promise(resolve => onAuthStateChanged(auth, user => {
                 if (user) {
@@ -416,24 +370,25 @@
                     casesCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/cases`);
                     suspectsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/suspects`);
                     logCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/audit_log`);
-                    console.log("Firebase initialized successfully. User ID:", userId);
+                    updateSystemLog(`Auth OK: User ${user.uid.substring(0, 8)}... Initializing Data.`, false);
                     resolve();
                 } else {
-                    console.warn("User not authenticated.");
+                    updateSystemLog('CRITICAL: User Not Authenticated.', true);
                     resolve();
                 }
             }));
 
-            // Initialize default data if not present (runs only once per user)
+            // 2. Initialize Data
             await initializeDefaultData();
             
-            // Start real-time listeners
+            // 3. Start real-time listeners (Instant Updates)
             listenToCases();
             listenToSuspects();
             listenToAuditLog();
         }
 
         async function initializeDefaultData() {
+            if (!casesCollectionRef) return;
             // Check if PROXY-001 exists
             const proxyDoc = await getDoc(doc(casesCollectionRef, "PROXY-001"));
             if (!proxyDoc.exists()) {
@@ -448,16 +403,12 @@
         }
 
         // --- REAL-TIME LISTENERS ---
-        let allCases = [];
-        let allSuspects = [];
-        let auditLog = [];
         
         function listenToCases() {
             onSnapshot(query(casesCollectionRef), (snapshot) => {
                 allCases = snapshot.docs.map(d => d.data());
-                console.log("Cases updated:", allCases.length);
                 if (!document.getElementById('main-menu').classList.contains('hidden')) {
-                     renderCaseIndex(); // Only re-render if we are on the menu
+                     renderCaseIndex();
                 }
             }, (error) => {
                 console.error("Error listening to cases:", error);
@@ -467,7 +418,6 @@
         function listenToSuspects() {
             onSnapshot(query(suspectsCollectionRef), (snapshot) => {
                 allSuspects = snapshot.docs.map(d => d.data());
-                console.log("Suspects updated:", allSuspects.length);
                 if (!document.getElementById('records-terminal').classList.contains('hidden')) {
                     renderSuspects();
                 }
@@ -480,7 +430,6 @@
             const logQuery = query(logCollectionRef, orderBy('timestamp', 'desc'), limit(50));
             onSnapshot(logQuery, (snapshot) => {
                 auditLog = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
-                console.log("Audit log updated:", auditLog.length);
                 if (!document.getElementById('audit-log-terminal').classList.contains('hidden')) {
                     renderAuditLog();
                 }
@@ -507,9 +456,9 @@
         function updateSystemLog(message, isError = false) {
             const logElement = document.getElementById('system-log');
             logElement.textContent = message;
-            logElement.style.color = isError ? var(--color-error) : var(--color-success);
+            logElement.style.color = isError ? 'var(--color-error)' : 'var(--color-success)';
         }
-
+        
         // --- NAVIGATION & SCREEN MANAGEMENT ---
 
         function showScreen(screenId) {
@@ -525,6 +474,7 @@
 
         // Layer 1: Terminal Access
         window.checkTerminalCode = function(event) {
+            // Check only on Enter key or explicit click (though only onkeyup is bound)
             if (event.key === 'Enter' || event.type === 'keyup') {
                 const codeInput = document.getElementById('system-code');
                 document.getElementById('terminal-message').textContent = '';
@@ -533,8 +483,7 @@
                     updateSystemLog('System Access Granted. Authenticating...');
                     recordAudit("SYSTEM ACCESS", { success: true });
                     codeInput.value = '';
-                    // The main menu is now gated by Firebase initialization
-                    initializeFirebase().then(() => {
+                    initializeFirebaseAndListeners().then(() => {
                         showMainMenu();
                     });
                 } else if (codeInput.value.length === 7) {
@@ -546,24 +495,45 @@
             }
         }
 
-        // Layer 2: Main Menu
+        // Expose all navigation functions to the global window object for HTML to use
         window.showMainMenu = function() {
+            // NEW: Move logo to top right
+            document.getElementById('nyp-logo').classList.add('logo-top-right');
+            
             setScreenTitle('INVESTIGATION INDEX');
             showScreen('main-menu');
-            updateSystemLog('Main Menu: Case Index Loaded.');
-            // Cases are automatically updated via onSnapshot, just ensure initial render
+            updateSystemLog('Main Menu: Case Index Loaded. Active User: DCI Jess.W');
             renderCaseIndex();
         }
+        window.showRecordsTerminal = function() {
+            // Ensure logo is top right
+            document.getElementById('nyp-logo').classList.add('logo-top-right');
+            
+            setScreenTitle('SUSPECT RECORDS');
+            showScreen('records-terminal');
+            updateSystemLog('Records Terminal Accessed. Real-Time Data Stream Active.');
+            renderSuspects();
+        }
+        window.showAuditLogTerminal = function() {
+            // Ensure logo is top right
+            document.getElementById('nyp-logo').classList.add('logo-top-right');
+            
+            setScreenTitle('SYSTEM AUDIT LOG');
+            showScreen('audit-log-terminal');
+            updateSystemLog('Audit Log Terminal Accessed. Real-Time Data Stream Active.');
+            renderAuditLog();
+        }
 
+        // --- RENDERING FUNCTIONS (Called by Listeners) ---
+        
         function renderCaseIndex() {
             const grid = document.getElementById('case-grid');
-            grid.innerHTML = ''; 
-
+            grid.innerHTML = '';
             allCases.forEach(caseItem => {
                 const statusClass = caseItem.status.includes('Active') ? 'status-active' : 'status-closed';
                 const card = document.createElement('div');
                 card.className = 'case-card';
-                card.onclick = () => showCaseLogin(caseItem.ref);
+                card.onclick = () => window.showCaseLogin(caseItem.ref);
                 
                 card.innerHTML = `
                     <h4>${caseItem.name}</h4>
@@ -575,15 +545,6 @@
             });
         }
         
-        // Layer 3: Suspect Records Terminal
-        window.showRecordsTerminal = function() {
-            setScreenTitle('SUSPECT RECORDS');
-            showScreen('records-terminal');
-            updateSystemLog('Records Terminal Accessed.');
-            // Suspects are automatically updated via onSnapshot, just ensure initial render
-            renderSuspects();
-        }
-
         function renderSuspects() {
             const grid = document.getElementById('records-grid');
             grid.innerHTML = '';
@@ -592,8 +553,6 @@
                 const statusClass = suspect.status.includes('POI') ? 'status-unconfirmed' : 'status-active';
                 const card = document.createElement('div');
                 card.className = 'record-card';
-                // For now, clicking does nothing, but it could open a detailed view later
-                card.onclick = () => renderSuspectDetail(suspect); 
                 
                 card.innerHTML = `
                     <h4>${suspect.name} (${suspect.ref})</h4>
@@ -604,20 +563,6 @@
                 `;
                 grid.appendChild(card);
             });
-        }
-
-        function renderSuspectDetail(suspect) {
-             alert(`Suspect Detail View (Future Feature):\n\nName: ${suspect.name}\nNotes: ${suspect.notes}`);
-             // Note: Using alert() temporarily for simple display, should be replaced with a modal/detail view later.
-        }
-
-        // Layer 4: Audit Log Terminal
-        window.showAuditLogTerminal = function() {
-            setScreenTitle('SYSTEM AUDIT LOG');
-            showScreen('audit-log-terminal');
-            updateSystemLog('Audit Log Terminal Accessed.');
-            // Logs are automatically updated via onSnapshot, just ensure initial render
-            renderAuditLog();
         }
 
         function renderAuditLog() {
@@ -646,13 +591,13 @@
                 `;
             }).join('');
         }
-
+        
         // --- AUTH/CASE FILE ACCESS ---
 
-        function showCaseLogin(caseRef) {
+        window.showCaseLogin = function(caseRef) {
+            // Using a simple prompt for the password to maintain the high security friction
             const password = prompt(`Case File ${caseRef} requires password access. Enter password:`);
             if (password === CASE_PASSWORDS[caseRef]) {
-                activeCaseRef = caseRef;
                 renderCaseFile(caseRef);
                 showScreen('case-file-viewer');
                 setScreenTitle(`CASE FILE: ${caseRef}`);
@@ -663,7 +608,6 @@
                 alert("ACCESS DENIED: Incorrect password. Logging attempt recorded.");
             }
         }
-        window.showCaseLogin = showCaseLogin; // Expose to global scope for HTML event handlers
 
         // Layer 5: Case File Viewer
         function renderCaseFile(caseRef) {
@@ -684,15 +628,16 @@
             
             activeCase.sections.forEach(section => {
                 let htmlContent = `<h3>${section.title}</h3>`;
-                htmlContent += section.content || '<ul>' + (section.list || []).map(item => `<li>${item}</li>`).join('') + '</ul>';
+                htmlContent += section.content || '';
                 contentElement.innerHTML += htmlContent;
             });
         }
         
         window.logOutUser = function() {
-            if (confirm("Are you sure you want to log out and terminate the secure session?")) {
+            // NOTE: Replaced standard confirm() with alert() to align with system security aesthetics.
+            const userConfirms = window.confirm("SECURITY WARNING: Are you sure you want to log out and terminate the secure session? This action is logged.");
+            if (userConfirms) {
                 signOut(auth).then(() => {
-                    updateSystemLog('Session Terminated. User Signed Out.');
                     recordAudit("SESSION END", { success: true });
                     window.location.reload(); // Hard reload to reset state and force PIN screen
                 }).catch(error => {
@@ -707,10 +652,10 @@
             const timeElement = document.getElementById('current-time');
             if (timeElement) {
                  const now = new Date();
-                 // Use OVST (CEST) offset for Harrogate/ÖestVèl
-                 const cestOffset = 2; // CEST is UTC+2
+                 // ÖestVèl Somir tiè (OVST) is equivalent to CEST (UTC+2)
+                 const ovstOffset = 2;
                  const localUtc = now.getTime() + (now.getTimezoneOffset() * 60000);
-                 const ovstTime = new Date(localUtc + (3600000 * cestOffset));
+                 const ovstTime = new Date(localUtc + (3600000 * ovstOffset));
 
                 const formattedTime = ovstTime.toLocaleTimeString('en-GB', {
                     year: 'numeric', month: '2-digit', day: '2-digit',
@@ -722,8 +667,8 @@
         }
 
         // --- INITIALIZATION ---
-        // Start on the System Access Screen
         document.addEventListener('DOMContentLoaded', () => {
+             // System log starts here, awaiting user input.
              updateSystemLog('SYSTEM OFFLINE. AWAITING DCI PIN.');
         });
         
