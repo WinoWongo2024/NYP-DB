@@ -1,98 +1,196 @@
-/* Basic Reset */
+/* General Styling */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #1e2d40; /* Dark blue/grey background */
-    color: #f0f8ff; /* Off-white text */
+    font-family: 'Consolas', 'Courier New', monospace; /* Monospaced for terminal look */
+    background-color: #0d1a26; 
+    color: #90ee90; /* Light green text (terminal style) */
     margin: 0;
     padding: 0;
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
-/* Header & Footer */
-header {
-    background-color: #0d1a26;
-    color: #ffc107; /* Amber highlight */
-    padding: 20px;
+header, footer {
+    background-color: #050d14;
+    padding: 15px;
     text-align: center;
-    border-bottom: 3px solid #ffc107;
+    border-bottom: 2px solid #4CAF50;
 }
 
 header h1 {
+    color: #ffc107; /* Amber highlight for main title */
     margin: 0;
-    font-size: 1.8em;
+    font-size: 1.6em;
 }
 
 header h2 {
+    color: #90ee90;
     margin: 5px 0 0 0;
-    font-size: 1.2em;
+    font-size: 1.1em;
     font-weight: normal;
 }
 
-footer {
-    text-align: center;
-    padding: 10px;
-    background-color: #0d1a26;
-    font-size: 0.8em;
-    border-top: 1px dashed #4a5c6e;
+.logo {
+    width: 60px;
+    height: auto;
+    margin-bottom: 10px;
+    filter: invert(80%) sepia(100%) saturate(100%) hue-rotate(80deg) brightness(120%); /* Makes the logo glow green */
 }
 
-/* Main Content (The Case File) */
+/* Screen Layouts */
+.terminal-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 20px;
+}
+
+.terminal-box, .login-box {
+    background-color: #1e2d40;
+    padding: 30px;
+    border: 1px solid #4CAF50;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 0 15px #4CAF5040;
+}
+
+.system-title {
+    color: #ffc107;
+    font-size: 1.2em;
+    margin-bottom: 15px;
+}
+
+input[type="text"], input[type="password"] {
+    padding: 10px;
+    margin: 10px 0 20px 0;
+    border: 1px solid #4a5c6e;
+    background-color: #0d1a26;
+    color: #90ee90;
+    width: 200px;
+    text-align: center;
+}
+
+button {
+    background-color: #007bff; /* Blue button for actions */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 5px;
+}
+
+.back-button, .back-button-top {
+    background-color: #f44336; /* Red for closing/back */
+}
+
+.error {
+    color: #f44336;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Case Grid (Index Screen) */
+.case-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+.case-card {
+    background-color: #2a3c50;
+    border: 1px solid #90ee90;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.case-card:hover {
+    background-color: #3e5066;
+    box-shadow: 0 0 10px #ffc107;
+}
+
+.case-card h4 {
+    color: #ffc107;
+    margin-top: 0;
+    border-bottom: 1px dashed #4a5c6e;
+    padding-bottom: 5px;
+}
+
+.case-card p {
+    font-size: 0.9em;
+    margin: 5px 0;
+}
+
+.case-status-active {
+    color: #4CAF50;
+    font-weight: bold;
+}
+.case-status-closed {
+    color: #f44336;
+    font-weight: bold;
+}
+
+/* Case File Viewer */
 #case-file {
     max-width: 900px;
     margin: 20px auto;
     padding: 30px;
-    background-color: #2a3c50; /* Slightly lighter inner panel */
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    background-color: #1e2d40;
+    border: 2px solid #90ee90;
+    box-shadow: 0 0 10px #90ee9050;
+    font-size: 0.95em;
 }
 
-.report-section h3 {
-    color: #ffc107; /* Highlight section titles */
-    border-bottom: 2px solid #4a5c6e;
+.file-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #ffc107;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.ref-block, .officer-block {
+    text-align: left;
+    line-height: 1.2;
+}
+
+.file-header p {
+    margin: 2px 0;
+    font-size: 0.9em;
+    color: #f0f8ff;
+}
+
+#case-content h3 {
+    color: #ffc107;
+    border-bottom: 1px dashed #4a5c6e;
     padding-bottom: 5px;
-    margin-top: 30px;
-    font-size: 1.4em;
+    margin-top: 20px;
+    font-size: 1.2em;
 }
 
-/* Specific Formatting */
-ul {
-    list-style-type: none;
-    padding-left: 0;
-}
-
-ul li {
-    margin-bottom: 10px;
-    padding-left: 20px;
-    position: relative;
-}
-
-ul li::before {
-    content: '→'; /* Custom bullet point */
-    color: #4CAF50; /* Green indicator */
+/* Evidence links styling */
+.evidence-link {
+    color: #90ee90;
+    text-decoration: none;
     font-weight: bold;
-    display: inline-block;
-    width: 1em;
-    margin-left: -1em;
+    margin-left: 10px;
 }
 
-strong {
-    color: #90ee90; /* Light green for emphasis */
+.evidence-link:hover {
+    text-decoration: underline;
 }
 
-hr {
-    border: 0;
-    height: 1px;
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
-    margin: 30px 0;
-}
-
-/* Media Query for smaller screens (PWA experience) */
-@media (max-width: 768px) {
-    #case-file {
-        padding: 15px;
-        margin: 10px;
-    }
-    header h1 {
-        font-size: 1.5em;
-    }
+/* Footer Log */
+footer {
+    padding: 5px;
+    font-size: 0.8em;
+    border-top: 1px dashed #4a5c6e;
 }
