@@ -3,38 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ÖestVèl CID: Operation Proxy</title>
+    <title>NYP / ÖestVèl CID Secure Access Terminal</title>
     <link rel="stylesheet" href="style.css">
     <meta name="theme-color" content="#1e2d40">
     <link rel="apple-touch-icon" href="icon-192.png"> </head>
 <body>
-    <header>
-        <h1>ÖestVèl CID 👑</h1>
-        <h2>Operation Proxy: Case File</h2>
-    </header>
 
-    <main id="case-file">
-        <section id="case-header" class="report-section"></section>
-        <hr>
-        <section id="background" class="report-section"></section>
-        <hr>
-        <section id="objectives" class="report-section"></section>
-        <hr>
-        <section id="evidence" class="report-section"></section>
-        <hr>
-        <section id="observations" class="report-section"></section>
-        <hr>
-        <section id="actions" class="report-section"></section>
-        <hr>
-        <section id="status" class="report-section"></section>
-        <hr>
-        <section id="recommendations" class="report-section"></section>
-        <hr>
-        <section id="closing-note" class="report-section"></section>
-    </main>
+    <div id="terminal-access" class="terminal-screen">
+        <div class="terminal-box">
+            <p class="system-title">NYP / ÖestVèl CID - SECURE TERMINAL</p>
+            <hr>
+            <p>ENTER SYSTEM ACCESS CODE</p>
+            <label for="system-code">Code (7 Digits):</label>
+            <input type="text" id="system-code" maxlength="7" placeholder="XXXXXXX" onkeyup="checkTerminalCode(event)">
+            <p id="terminal-message" class="error"></p>
+        </div>
+    </div>
+
+    <div id="case-index-screen" class="terminal-screen hidden">
+        <header>
+            <img src="./ny-police-logo.png" alt="North Yorkshire Police Logo" class="logo"> <h1>CID CASE MANAGEMENT SYSTEM 👑</h1>
+            <h2>Active Investigations: DCI Jess.W</h2>
+        </header>
+
+        <main class="case-grid" id="case-grid">
+            </main>
+    </div>
+    
+    <div id="login-screen" class="terminal-screen hidden">
+        <div class="login-box">
+            <p class="system-title" id="login-case-ref"></p>
+            <p>ACCESS CREDENTIALS REQUIRED</p>
+            <label for="case-password">Case File Password:</label>
+            <input type="password" id="case-password" placeholder="Enter Secure Password">
+            <button onclick="attemptCaseLogin()">ACCESS CASE FILE</button>
+            <button class="back-button" onclick="showCaseIndex()">BACK TO INDEX</button>
+            <p id="login-message" class="error"></p>
+        </div>
+    </div>
+
+    <main id="case-file" class="hidden"> 
+        <header class="file-header">
+            <div class="ref-block">
+                <p>Case Reference: <span id="file-ref-display"></span></p>
+                <p>Status: <span id="file-status-display"></span></p>
+            </div>
+            <div class="officer-block">
+                <p>Investigating Officer: <span id="file-officer-display"></span></p>
+                <p>Time (OVST): <span id="current-time"></span></p>
+            </div>
+            <button class="back-button-top" onclick="showCaseIndex()">CLOSE FILE</button>
+        </header>
+
+        <section id="case-content"></section> </main>
 
     <footer>
-        <p>CONFIDENTIAL | DCI Jess.W | Current Time: <span id="current-time"></span></p>
+        <p>CONFIDENTIAL | SYSTEM LOG: <span id="system-log">SYSTEM ONLINE</span></p>
     </footer>
 
     <script src="script.js"></script>
