@@ -6,19 +6,20 @@
     <title>NYP / ÖestVèl CID Secure Operations Terminal</title>
     <!-- PWA Setup -->
     <meta name="theme-color" content="#1e2d40">
-    <link rel="apple-touch-icon" href="IMG_0749.png">
+    <link rel="apple-touch-icon" href="icon-192.png"> 
     
     <style>
-        /* Mobile-First CSS Reset & Core Terminal Look */
+        /* --- MODERN TERMINAL STYLE REFACTOR --- */
         :root {
-            --color-bg: #0d1a26;
-            --color-terminal: #1e2d40;
+            --color-bg: #0c151e; /* Darker background */
+            --color-terminal: #1a293a; /* Slightly lighter panel */
             --color-accent: #ffc107; /* Amber/Yellow for primary focus */
-            --color-success: #4CAF50; /* Green for active/access granted */
-            --color-error: #f44336; /* Red for denied/critical */
+            --color-success: #43e061; /* Brighter Green for active/access granted */
+            --color-error: #ff5555; /* Crisper Red for denied/critical */
             --color-text: #f0f8ff;
-            --color-mono: 'Consolas', 'Courier New', monospace;
-            --touch-padding: 15px; /* Large touch targets for iPhone 15 Pro Max */
+            --color-mono: 'Roboto Mono', 'Consolas', monospace; /* Modern, clean monospace */
+            --touch-padding: 15px; 
+            --neon-glow: 0 0 5px rgba(255, 193, 7, 0.7), 0 0 10px rgba(255, 193, 7, 0.3);
         }
 
         body {
@@ -29,7 +30,7 @@
             padding: 0;
             line-height: 1.6;
             overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent; /* Clean touch response */
+            -webkit-tap-highlight-color: transparent; 
         }
 
         /* HEADER & FOOTER */
@@ -38,14 +39,16 @@
             padding: 15px 0;
             text-align: center;
             border-bottom: 3px solid var(--color-accent);
-            position: relative; /* New: Essential for absolute logo positioning */
-            padding-right: 100px; /* Ensure space for the top-right logo */
+            position: relative; 
+            padding-right: 100px; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
 
         header h1 {
             color: var(--color-accent);
             margin: 0;
-            font-size: 1.4em;
+            font-size: 1.5em;
+            text-shadow: var(--neon-glow);
         }
 
         header h2 {
@@ -57,27 +60,30 @@
 
         /* Logo Base Style (Centered for PIN Screen) */
         .logo {
-            width: 50px;
-            height: auto;
-            margin-bottom: 8px;
-            /* Filter applied to match the initial 'offline' state */
+            width: 80px; /* NEW SIZE: Clearer for central display */
+            height: 80px;
+            margin-bottom: 10px;
+            object-fit: contain; /* Ensure image fits neatly */
+            /* Initial 'offline' state: Grayscale with a light glow */
             filter: grayscale(100%) brightness(150%); 
             transition: all 0.5s ease;
+            border-radius: 4px;
         }
 
-        /* NEW: Top Right Positioning for Logged-In Screens */
+        /* NEW: Top Right Positioning for Logged-In Screens (PWA size) */
         .logo-top-right {
             position: absolute;
             top: 5px;
             right: 15px;
-            width: 75px; /* Larger for better visibility */
-            height: 75px;
+            width: 55px; /* NEW SIZE: Optimized small size for corner */
+            height: 55px;
             margin: 0;
             border: 1px solid var(--color-accent);
-            padding: 5px;
+            padding: 3px;
             background-color: var(--color-bg);
             border-radius: 4px;
             filter: none; /* Remove filter for active system state */
+            box-shadow: var(--neon-glow);
         }
 
         footer {
@@ -88,9 +94,10 @@
             padding: 5px 0;
             background-color: var(--color-terminal);
             color: var(--color-success);
-            font-size: 0.7em;
+            font-size: 0.75em;
             text-align: center;
             border-top: 1px solid var(--color-success);
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.4);
             z-index: 100;
             transition: color 0.3s;
         }
@@ -115,14 +122,14 @@
             border: 2px solid var(--color-accent);
             border-radius: 8px;
             text-align: center;
-            box-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
+            box-shadow: var(--neon-glow);
             width: 90%;
             max-width: 400px;
         }
 
         /* INPUTS & BUTTONS */
         input[type="text"], input[type="password"] {
-            padding: 12px;
+            padding: 14px;
             margin: 10px 0 20px 0;
             border: 1px solid #4a5c6e;
             background-color: var(--color-bg);
@@ -131,11 +138,12 @@
             box-sizing: border-box;
             text-align: center;
             border-radius: 4px;
-            font-size: 1em;
+            font-size: 1.1em;
+            text-shadow: 0 0 2px var(--color-success);
         }
         button {
             background-color: var(--color-success);
-            color: var(--color-terminal);
+            color: var(--color-bg);
             padding: var(--touch-padding);
             border: none;
             cursor: pointer;
@@ -144,13 +152,18 @@
             width: 100%;
             border-radius: 4px;
             transition: background-color 0.3s, box-shadow 0.2s;
+            text-transform: uppercase;
         }
         button:hover, button:focus {
-            background-color: #66bb6a;
+            background-color: #3cb055;
             box-shadow: 0 0 10px var(--color-success);
         }
         .back-button, .close-file-button {
             background-color: var(--color-error);
+        }
+        .back-button:hover, .close-file-button:hover {
+             background-color: #d13d3d;
+             box-shadow: 0 0 10px var(--color-error);
         }
         
         /* LAYOUTS */
@@ -170,6 +183,11 @@
             transition: all 0.2s;
             text-align: left;
             border-radius: 6px;
+            box-shadow: 0 0 5px rgba(255, 193, 7, 0.1);
+        }
+        .case-card:hover, .record-card:hover {
+            border-color: var(--color-success);
+            box-shadow: 0 0 8px var(--color-success);
         }
         
         /* VIEWER & CONTENT */
@@ -184,6 +202,7 @@
             padding: 10px;
             border-bottom: 2px solid var(--color-accent);
             margin-bottom: 15px;
+            gap: 10px;
         }
         .log-entry {
             border-bottom: 1px dashed #4a5c6e;
@@ -204,8 +223,8 @@
 <body>
 
     <header id="main-header">
-        <!-- Logo Source updated to reflect IMG_0749.png and given an ID for manipulation -->
-        <img id="nyp-logo" src="https://placehold.co/75x75/ffc107/1e2d40?text=NYP%0A(IMG_0749)" alt="NYP/Velic Crown Logo" class="logo">
+        <!-- Logo Source updated to use the root path: IMG_0749.png -->
+        <img id="nyp-logo" src="IMG_0749.png" alt="NYP/Velic Crown Logo" class="logo">
         <h1>NYP / ÖestVèl CID</h1>
         <h2 id="screen-title">SECURE OPERATIONS TERMINAL</h2>
     </header>
@@ -214,7 +233,7 @@
     <div id="terminal-access" class="terminal-screen">
         <div class="terminal-box">
             <p class="system-title">SYSTEM INITIATION PROTOCOL</p>
-            <hr>
+            <hr style="border-color: #4a5c6e;">
             <p>ENTER DCI SYSTEM ACCESS PIN</p>
             <label for="system-code">PIN (7 Digits):</label>
             <input type="password" id="system-code" maxlength="7" placeholder="_______" onkeyup="window.checkTerminalCode(event)">
@@ -226,10 +245,10 @@
     <div id="main-menu" class="file-viewer hidden">
         <div class="file-header">
             <h3 style="color:var(--color-accent); margin:0;">MAIN MENU &rarr; INVESTIGATIONS</h3>
-            <div>
-                <button onclick="window.showRecordsTerminal()">SUSPECT RECORDS</button>
-                <button onclick="window.showAuditLogTerminal()">AUDIT LOG</button>
-                <button class="close-file-button" onclick="window.logOutUser()">LOGOUT</button>
+            <div style="display:flex; gap: 10px; flex-wrap: wrap;">
+                <button onclick="window.showRecordsTerminal()" style="flex-grow:1;">SUSPECT RECORDS</button>
+                <button onclick="window.showAuditLogTerminal()" style="flex-grow:1;">AUDIT LOG</button>
+                <button class="close-file-button" onclick="window.logOutUser()" style="flex-grow:1;">LOGOUT</button>
             </div>
         </div>
         <main class="case-grid" id="case-grid">
@@ -497,7 +516,7 @@
 
         // Expose all navigation functions to the global window object for HTML to use
         window.showMainMenu = function() {
-            // NEW: Move logo to top right
+            // Move logo to top right
             document.getElementById('nyp-logo').classList.add('logo-top-right');
             
             setScreenTitle('INVESTIGATION INDEX');
@@ -605,7 +624,7 @@
             } else if (password !== null) {
                 updateSystemLog(`Access Denied to ${caseRef}.`, true);
                 recordAudit("FILE ACCESS", { case: caseRef, success: false });
-                alert("ACCESS DENIED: Incorrect password. Logging attempt recorded.");
+                window.alert("ACCESS DENIED: Incorrect password. Logging attempt recorded.");
             }
         }
 
@@ -634,7 +653,7 @@
         }
         
         window.logOutUser = function() {
-            // NOTE: Replaced standard confirm() with alert() to align with system security aesthetics.
+            // NOTE: Replaced standard confirm() with window.confirm() to align with system security aesthetics.
             const userConfirms = window.confirm("SECURITY WARNING: Are you sure you want to log out and terminate the secure session? This action is logged.");
             if (userConfirms) {
                 signOut(auth).then(() => {
