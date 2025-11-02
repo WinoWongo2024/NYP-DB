@@ -3,64 +3,734 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NYP / ÖestVèl CID Secure Access Terminal</title>
-    <link rel="stylesheet" href="style.css">
+    <title>NYP / ÖestVèl CID Secure Operations Terminal</title>
+    <!-- PWA Setup -->
     <meta name="theme-color" content="#1e2d40">
-    <link rel="apple-touch-icon" href="icon-192.png"> </head>
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <style>
+        /* Mobile-First CSS Reset & Core Terminal Look */
+        :root {
+            --color-bg: #0d1a26;
+            --color-terminal: #1e2d40;
+            --color-accent: #ffc107; /* Amber/Yellow for primary focus */
+            --color-success: #4CAF50; /* Green for active/access granted */
+            --color-error: #f44336; /* Red for denied/critical */
+            --color-text: #f0f8ff;
+            --color-mono: 'Consolas', 'Courier New', monospace;
+        }
+
+        body {
+            font-family: var(--color-mono);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            overflow-x: hidden; /* Prevent horizontal scrolling on mobile */
+        }
+
+        /* HEADER & FOOTER */
+        header {
+            background-color: var(--color-terminal);
+            padding: 15px 0;
+            text-align: center;
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        header h1 {
+            color: var(--color-accent);
+            margin: 0;
+            font-size: 1.4em; /* Optimized for mobile */
+        }
+
+        header h2 {
+            color: var(--color-text);
+            margin: 5px 0 0 0;
+            font-size: 0.9em;
+            font-weight: normal;
+        }
+
+        .logo {
+            width: 50px; /* Small and sharp */
+            height: auto;
+            margin-bottom: 8px;
+            /* Simple monochrome filter for professional terminal look */
+            filter: grayscale(100%) brightness(150%); 
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 5px 0;
+            background-color: var(--color-terminal);
+            color: var(--color-success);
+            font-size: 0.7em;
+            text-align: center;
+            border-top: 1px solid var(--color-success);
+            z-index: 100;
+        }
+
+        /* UTILITIES */
+        .hidden {
+            display: none !important;
+        }
+        .error {
+            color: var(--color-error);
+            font-weight: bold;
+        }
+        .status-active { color: var(--color-success); }
+        .status-closed { color: var(--color-error); }
+        .status-unconfirmed { color: var(--color-accent); }
+        .terminal-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 85vh; /* Account for fixed footer */
+            padding: 20px;
+        }
+        .terminal-box {
+            background-color: var(--color-terminal);
+            padding: 30px 20px;
+            border: 2px solid var(--color-accent);
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
+            width: 90%;
+            max-width: 400px; /* Max width for desktop viewing */
+        }
+
+        /* INPUTS & BUTTONS (Mobile-Friendly Touch Targets) */
+        input[type="text"], input[type="password"] {
+            padding: 12px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #4a5c6e;
+            background-color: var(--color-bg);
+            color: var(--color-success); /* Input text is green */
+            width: 90%;
+            box-sizing: border-box;
+            text-align: center;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        button {
+            background-color: var(--color-success);
+            color: var(--color-terminal);
+            padding: 15px; /* Large touch target */
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 8px 0;
+            width: 100%;
+            border-radius: 4px;
+            transition: background-color 0.3s, box-shadow 0.2s;
+        }
+        button:hover, button:focus {
+            background-color: #66bb6a;
+            box-shadow: 0 0 10px var(--color-success);
+        }
+        .back-button, .close-file-button {
+            background-color: var(--color-error);
+        }
+        .back-button:hover, .close-file-button:hover {
+            background-color: #ff6a6a;
+            box-shadow: 0 0 10px var(--color-error);
+        }
+
+        /* CASE INDEX / RECORDS GRID */
+        .case-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Single column on mobile */
+            gap: 15px;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .case-card, .record-card {
+            background-color: var(--color-terminal);
+            border: 1px solid var(--color-accent);
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            border-radius: 6px;
+        }
+
+        .case-card:hover, .record-card:hover {
+            background-color: #2a3c50;
+            box-shadow: 0 0 10px var(--color-accent);
+        }
+
+        .case-card h4, .record-card h4 {
+            color: var(--color-accent);
+            margin-top: 0;
+            border-bottom: 1px dashed #4a5c6e;
+            padding-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .case-card p, .record-card p {
+            font-size: 0.85em;
+            margin: 5px 0;
+        }
+        
+        /* CASE/RECORDS/LOG FILE VIEWER */
+        .file-viewer {
+            padding-bottom: 50px; /* Space for fixed footer */
+            padding-top: 15px;
+        }
+        .file-header {
+            display: flex;
+            flex-direction: column; /* Stack vertically on mobile */
+            background-color: #2a3c50;
+            padding: 10px;
+            border-bottom: 2px solid var(--color-accent);
+            margin-bottom: 15px;
+        }
+
+        .ref-block, .officer-block {
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+        
+        .close-file-button {
+            width: 90%;
+            margin: 10px auto;
+        }
+        
+        #file-content h3 {
+            color: var(--color-success);
+            border-left: 3px solid var(--color-success);
+            padding-left: 10px;
+            margin-top: 25px;
+            font-size: 1em;
+        }
+
+        .evidence-link {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: bold;
+            margin-left: 10px;
+            font-size: 0.9em;
+        }
+
+        .log-entry {
+            border-bottom: 1px dashed #4a5c6e;
+            padding: 8px 0;
+            font-size: 0.85em;
+            display: flex;
+            justify-content: space-between;
+        }
+        .log-entry span:first-child { color: var(--color-accent); }
+        .log-entry span:last-child { font-style: italic; }
+
+        /* Media Query for larger screens (e.g., tablet/desktop) */
+        @media (min-width: 768px) {
+            .case-grid {
+                grid-template-columns: repeat(3, 1fr); /* 3 columns on tablet/desktop */
+            }
+            .file-header {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            .close-file-button {
+                width: auto;
+                margin: 0;
+            }
+            header h1 {
+                font-size: 2em;
+            }
+            header h2 {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
 <body>
 
+    <header>
+        <img src="https://placehold.co/50x50/ffc107/1e2d40?text=NYP" alt="North Yorkshire Police Logo" class="logo">
+        <h1>NYP / ÖestVèl CID</h1>
+        <h2 id="screen-title">SECURE OPERATIONS TERMINAL</h2>
+    </header>
+
+    <!-- LAYER 1: SYSTEM ACCESS (PIN) -->
     <div id="terminal-access" class="terminal-screen">
         <div class="terminal-box">
-            <p class="system-title">NYP / ÖestVèl CID - SECURE TERMINAL</p>
+            <p class="system-title">SYSTEM INITIATION PROTOCOL</p>
             <hr>
-            <p>ENTER SYSTEM ACCESS CODE</p>
-            <label for="system-code">Code (7 Digits):</label>
-            <input type="text" id="system-code" maxlength="7" placeholder="XXXXXXX" onkeyup="checkTerminalCode(event)">
+            <p>ENTER DCI SYSTEM ACCESS PIN</p>
+            <label for="system-code">PIN (7 Digits):</label>
+            <input type="password" id="system-code" maxlength="7" placeholder="_______" onkeyup="checkTerminalCode(event)">
             <p id="terminal-message" class="error"></p>
         </div>
     </div>
 
-    <div id="case-index-screen" class="terminal-screen hidden">
-        <header>
-            <img src="./IMG_0749.png" alt="North Yorkshire Police Logo" class="logo"> <h1>CID CASE MANAGEMENT SYSTEM 👑</h1>
-            <h2>Active Investigations: DCI Jess.W</h2>
-        </header>
-
+    <!-- LAYER 2: MAIN MENU / CASE INDEX -->
+    <div id="main-menu" class="file-viewer hidden">
+        <div class="file-header">
+            <h3 style="color:var(--color-accent); margin:0;">MAIN MENU $\rightarrow$ INVESTIGATIONS</h3>
+            <div>
+                <button onclick="showRecordsTerminal()">SUSPECT RECORDS</button>
+                <button onclick="showAuditLogTerminal()">AUDIT LOG</button>
+                <button class="close-file-button" onclick="logOutUser()">LOGOUT</button>
+            </div>
+        </div>
         <main class="case-grid" id="case-grid">
-            </main>
+            <!-- Case buttons will be injected here by script.js -->
+        </main>
     </div>
-    
-    <div id="login-screen" class="terminal-screen hidden">
-        <div class="login-box">
-            <p class="system-title" id="login-case-ref"></p>
-            <p>ACCESS CREDENTIALS REQUIRED</p>
-            <label for="case-password">Case File Password:</label>
-            <input type="password" id="case-password" placeholder="Enter Secure Password">
-            <button onclick="attemptCaseLogin()">ACCESS CASE FILE</button>
-            <button class="back-button" onclick="showCaseIndex()">BACK TO INDEX</button>
-            <p id="login-message" class="error"></p>
+
+    <!-- LAYER 3: SUSPECT RECORDS TERMINAL -->
+    <div id="records-terminal" class="file-viewer hidden">
+        <div class="file-header">
+            <h3 style="color:var(--color-accent); margin:0;">MAIN MENU $\rightarrow$ SUSPECT/PERSONS RECORDS (PINS)</h3>
+            <button class="back-button-top" onclick="showMainMenu()">BACK TO MENU</button>
+        </div>
+        <main class="case-grid" id="records-grid">
+            <!-- Records will be injected here -->
+        </main>
+    </div>
+
+    <!-- LAYER 4: AUDIT LOG TERMINAL -->
+    <div id="audit-log-terminal" class="file-viewer hidden">
+        <div class="file-header">
+            <h3 style="color:var(--color-accent); margin:0;">MAIN MENU $\rightarrow$ SYSTEM AUDIT LOG</h3>
+            <button class="back-button-top" onclick="showMainMenu()">BACK TO MENU</button>
+        </div>
+        <div style="padding: 20px;" id="audit-log-content">
+            <!-- Logs will be injected here -->
         </div>
     </div>
 
-    <main id="case-file" class="hidden"> 
-        <header class="file-header">
+    <!-- LAYER 5: CASE FILE VIEWER -->
+    <div id="case-file-viewer" class="file-viewer hidden"> 
+        <div class="file-header">
             <div class="ref-block">
-                <p>Case Reference: <span id="file-ref-display"></span></p>
-                <p>Status: <span id="file-status-display"></span></p>
+                <p>Case Reference: <span id="file-ref-display" class="status-active"></span></p>
+                <p>Status: <span id="file-status-display" class="status-active"></span></p>
             </div>
             <div class="officer-block">
                 <p>Investigating Officer: <span id="file-officer-display"></span></p>
                 <p>Time (OVST): <span id="current-time"></span></p>
             </div>
-            <button class="back-button-top" onclick="showCaseIndex()">CLOSE FILE</button>
-        </header>
-
-        <section id="case-content"></section> </main>
-
+            <button class="close-file-button" onclick="showMainMenu()">CLOSE FILE</button>
+        </div>
+        <section style="padding: 0 20px;" id="file-content">
+            <!-- Case content loaded dynamically here -->
+        </section>
+    </div>
+    
     <footer>
-        <p>CONFIDENTIAL | SYSTEM LOG: <span id="system-log">SYSTEM ONLINE</span></p>
+        <p>CONFIDENTIAL | SYSTEM LOG: <span id="system-log">SYSTEM OFFLINE</span></p>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- Firebase Imports (MUST use type="module" for ES6 modules) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, query, serverTimestamp, orderBy, limit, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // setLogLevel('debug'); // Uncomment for detailed debug logs
+
+        // --- GLOBAL CONFIG & INITIALIZATION ---
+        const SYSTEM_PIN = "1936203"; // DCI System Access PIN
+        const CASE_PASSWORDS = {
+            "PROXY-001": "MILLIE66", 
+            "VELIC-002": "TRANSF3R" 
+        };
+
+        let db, auth, userId;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        let casesCollectionRef, suspectsCollectionRef, logCollectionRef;
+        let activeCaseRef = null;
+
+        // --- DATA TEMPLATES ---
+        const initialCaseData = {
+            "PROXY-001": {
+                ref: "PROXY-001",
+                name: "Operation Proxy",
+                officer: "DCI Jess.W",
+                opened: "02/11/2025 – 15:00 hrs OVST",
+                location: "Scarborough, ÖestVèl",
+                status: "Active",
+                sections: [
+                    { title: "1. Background", content: `<p>Subject of investigation: <strong>“Millie”</strong> – known associate, previously engaged in private Snapchat communications with Investigator.</p><p>Trigger event: Emergence of a new Snapchat account (alias: <strong>izzy_scuzzy</strong>) following breakdown of trust and prior account irregularities.</p>` },
+                    { title: "3. Evidence Collected", content: `
+                        <h4>3.1 Snapchat Activity</h4><ul><li>New account identified (izzy_scuzzy).</li></ul>
+                        <h4>3.2 Image Comparisons</h4><ul><li>Image 1 & 2: <strong>Confirmed Millie.</strong> <a href="./evidence/proxy-001/snap-1.jpg" target="_blank" class="evidence-link">[VIEW EVID-SN1]</a></li>
+                        <li>Image 3 (Insta): Strong resemblance but structural differences. <a href="./evidence/proxy-001/insta-3.jpg" target="_blank" class="evidence-link">[VIEW EVID-IN3]</a></li></ul>
+                        <h4>3.3 Facial Recognition Analysis</h4><ul><li><strong>Verdict:</strong> Instagram subject <strong>not confirmed</strong> as Millie (&lt;80% threshold).</li></ul>
+                    `},
+                ]
+            }
+            // Add more default cases here if needed
+        };
+
+        const initialSuspectsData = {
+            "Millie-001": {
+                name: "Millie K.",
+                alias: "izzy_scuzzy (Snapchat)",
+                status: "Person of Interest (POI)",
+                ref: "PID-MK-001",
+                notes: "Primary subject of Operation Proxy. Identity confirmed on private snaps. Instagram alias identity unconfirmed.",
+                currentLocation: "Confirmed: Harrogate area (ÖestVèl Centrè)",
+                linkedCases: ["PROXY-001"]
+            }
+        };
+
+        // --- AUTH & FIRESTORE SETUP ---
+
+        async function initializeFirebase() {
+            if (!firebaseConfig) {
+                console.error("Firebase config is missing.");
+                return;
+            }
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            // Authentication logic
+            if (initialAuthToken) {
+                await signInWithCustomToken(auth, initialAuthToken)
+                    .catch(e => {
+                        console.error("Custom token sign-in failed. Falling back to anonymous.", e);
+                        signInAnonymously(auth);
+                    });
+            } else {
+                await signInAnonymously(auth);
+            }
+            
+            // Wait for auth state to be resolved
+            await new Promise(resolve => onAuthStateChanged(auth, user => {
+                if (user) {
+                    userId = user.uid;
+                    // Define Firestore references using userId
+                    casesCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/cases`);
+                    suspectsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/suspects`);
+                    logCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/audit_log`);
+                    console.log("Firebase initialized successfully. User ID:", userId);
+                    resolve();
+                } else {
+                    console.warn("User not authenticated.");
+                    resolve();
+                }
+            }));
+
+            // Initialize default data if not present (runs only once per user)
+            await initializeDefaultData();
+            
+            // Start real-time listeners
+            listenToCases();
+            listenToSuspects();
+            listenToAuditLog();
+        }
+
+        async function initializeDefaultData() {
+            // Check if PROXY-001 exists
+            const proxyDoc = await getDoc(doc(casesCollectionRef, "PROXY-001"));
+            if (!proxyDoc.exists()) {
+                console.log("Initializing default case and suspect data...");
+                for (const [ref, data] of Object.entries(initialCaseData)) {
+                    await setDoc(doc(casesCollectionRef, ref), data);
+                }
+                for (const [id, data] of Object.entries(initialSuspectsData)) {
+                    await setDoc(doc(suspectsCollectionRef, id), data);
+                }
+            }
+        }
+
+        // --- REAL-TIME LISTENERS ---
+        let allCases = [];
+        let allSuspects = [];
+        let auditLog = [];
+        
+        function listenToCases() {
+            onSnapshot(query(casesCollectionRef), (snapshot) => {
+                allCases = snapshot.docs.map(d => d.data());
+                console.log("Cases updated:", allCases.length);
+                if (!document.getElementById('main-menu').classList.contains('hidden')) {
+                     renderCaseIndex(); // Only re-render if we are on the menu
+                }
+            }, (error) => {
+                console.error("Error listening to cases:", error);
+            });
+        }
+        
+        function listenToSuspects() {
+            onSnapshot(query(suspectsCollectionRef), (snapshot) => {
+                allSuspects = snapshot.docs.map(d => d.data());
+                console.log("Suspects updated:", allSuspects.length);
+                if (!document.getElementById('records-terminal').classList.contains('hidden')) {
+                    renderSuspects();
+                }
+            }, (error) => {
+                console.error("Error listening to suspects:", error);
+            });
+        }
+        
+        function listenToAuditLog() {
+            const logQuery = query(logCollectionRef, orderBy('timestamp', 'desc'), limit(50));
+            onSnapshot(logQuery, (snapshot) => {
+                auditLog = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
+                console.log("Audit log updated:", auditLog.length);
+                if (!document.getElementById('audit-log-terminal').classList.contains('hidden')) {
+                    renderAuditLog();
+                }
+            }, (error) => {
+                console.error("Error listening to audit log:", error);
+            });
+        }
+        
+        // --- LOGGING ---
+        async function recordAudit(action, details = {}) {
+            if (!logCollectionRef) return;
+            try {
+                await setDoc(doc(logCollectionRef), {
+                    timestamp: serverTimestamp(),
+                    userId: userId,
+                    action: action,
+                    details: details,
+                });
+            } catch (e) {
+                console.error("Failed to record audit log:", e);
+            }
+        }
+
+        function updateSystemLog(message, isError = false) {
+            const logElement = document.getElementById('system-log');
+            logElement.textContent = message;
+            logElement.style.color = isError ? var(--color-error) : var(--color-success);
+        }
+
+        // --- NAVIGATION & SCREEN MANAGEMENT ---
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.terminal-screen, .file-viewer').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        function setScreenTitle(title) {
+            document.getElementById('screen-title').textContent = title;
+        }
+
+        // Layer 1: Terminal Access
+        window.checkTerminalCode = function(event) {
+            if (event.key === 'Enter' || event.type === 'keyup') {
+                const codeInput = document.getElementById('system-code');
+                document.getElementById('terminal-message').textContent = '';
+                
+                if (codeInput.value === SYSTEM_PIN) {
+                    updateSystemLog('System Access Granted. Authenticating...');
+                    recordAudit("SYSTEM ACCESS", { success: true });
+                    codeInput.value = '';
+                    // The main menu is now gated by Firebase initialization
+                    initializeFirebase().then(() => {
+                        showMainMenu();
+                    });
+                } else if (codeInput.value.length === 7) {
+                    document.getElementById('terminal-message').textContent = 'ACCESS DENIED: Invalid DCI PIN.';
+                    updateSystemLog('Access Denied. Invalid PIN.', true);
+                    recordAudit("SYSTEM ACCESS", { success: false, pin_attempt: codeInput.value });
+                    codeInput.value = '';
+                }
+            }
+        }
+
+        // Layer 2: Main Menu
+        window.showMainMenu = function() {
+            setScreenTitle('INVESTIGATION INDEX');
+            showScreen('main-menu');
+            updateSystemLog('Main Menu: Case Index Loaded.');
+            // Cases are automatically updated via onSnapshot, just ensure initial render
+            renderCaseIndex();
+        }
+
+        function renderCaseIndex() {
+            const grid = document.getElementById('case-grid');
+            grid.innerHTML = ''; 
+
+            allCases.forEach(caseItem => {
+                const statusClass = caseItem.status.includes('Active') ? 'status-active' : 'status-closed';
+                const card = document.createElement('div');
+                card.className = 'case-card';
+                card.onclick = () => showCaseLogin(caseItem.ref);
+                
+                card.innerHTML = `
+                    <h4>${caseItem.name}</h4>
+                    <p><strong>Ref:</strong> ${caseItem.ref}</p>
+                    <p><strong>Officer:</strong> ${caseItem.officer}</p>
+                    <p><strong>Status:</strong> <span class="${statusClass}">${caseItem.status.toUpperCase()}</span></p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        // Layer 3: Suspect Records Terminal
+        window.showRecordsTerminal = function() {
+            setScreenTitle('SUSPECT RECORDS');
+            showScreen('records-terminal');
+            updateSystemLog('Records Terminal Accessed.');
+            // Suspects are automatically updated via onSnapshot, just ensure initial render
+            renderSuspects();
+        }
+
+        function renderSuspects() {
+            const grid = document.getElementById('records-grid');
+            grid.innerHTML = '';
+            
+            allSuspects.forEach(suspect => {
+                const statusClass = suspect.status.includes('POI') ? 'status-unconfirmed' : 'status-active';
+                const card = document.createElement('div');
+                card.className = 'record-card';
+                // For now, clicking does nothing, but it could open a detailed view later
+                card.onclick = () => renderSuspectDetail(suspect); 
+                
+                card.innerHTML = `
+                    <h4>${suspect.name} (${suspect.ref})</h4>
+                    <p><strong>Alias:</strong> ${suspect.alias}</p>
+                    <p><strong>Location:</strong> ${suspect.currentLocation}</p>
+                    <p><strong>Status:</strong> <span class="${statusClass}">${suspect.status.toUpperCase()}</span></p>
+                    <p><strong>Linked Cases:</strong> ${suspect.linkedCases.join(', ')}</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderSuspectDetail(suspect) {
+             alert(`Suspect Detail View (Future Feature):\n\nName: ${suspect.name}\nNotes: ${suspect.notes}`);
+             // Note: Using alert() temporarily for simple display, should be replaced with a modal/detail view later.
+        }
+
+        // Layer 4: Audit Log Terminal
+        window.showAuditLogTerminal = function() {
+            setScreenTitle('SYSTEM AUDIT LOG');
+            showScreen('audit-log-terminal');
+            updateSystemLog('Audit Log Terminal Accessed.');
+            // Logs are automatically updated via onSnapshot, just ensure initial render
+            renderAuditLog();
+        }
+
+        function renderAuditLog() {
+            const logContent = document.getElementById('audit-log-content');
+            if (auditLog.length === 0) {
+                logContent.innerHTML = '<p style="color:var(--color-accent);">No recent activity recorded.</p>';
+                return;
+            }
+
+            logContent.innerHTML = auditLog.map(log => {
+                const timestamp = log.timestamp ? new Date(log.timestamp.toDate()).toLocaleString('en-GB', { 
+                    year: 'numeric', month: '2-digit', day: '2-digit', 
+                    hour: '2-digit', minute: '2-digit', second: '2-digit' 
+                }) : 'N/A';
+                
+                let message = `${log.action}`;
+                if (log.details.success !== undefined) {
+                    message += log.details.success ? " [SUCCESS]" : " [FAILURE]";
+                }
+
+                return `
+                    <div class="log-entry">
+                        <span>${timestamp}</span>
+                        <span>${message}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- AUTH/CASE FILE ACCESS ---
+
+        function showCaseLogin(caseRef) {
+            const password = prompt(`Case File ${caseRef} requires password access. Enter password:`);
+            if (password === CASE_PASSWORDS[caseRef]) {
+                activeCaseRef = caseRef;
+                renderCaseFile(caseRef);
+                showScreen('case-file-viewer');
+                setScreenTitle(`CASE FILE: ${caseRef}`);
+                recordAudit("FILE ACCESS", { case: caseRef, success: true });
+            } else if (password !== null) {
+                updateSystemLog(`Access Denied to ${caseRef}.`, true);
+                recordAudit("FILE ACCESS", { case: caseRef, success: false });
+                alert("ACCESS DENIED: Incorrect password. Logging attempt recorded.");
+            }
+        }
+        window.showCaseLogin = showCaseLogin; // Expose to global scope for HTML event handlers
+
+        // Layer 5: Case File Viewer
+        function renderCaseFile(caseRef) {
+            const activeCase = allCases.find(c => c.ref === caseRef);
+            if (!activeCase) {
+                document.getElementById('file-content').innerHTML = `<p class="error">Case file ${caseRef} not found in database.</p>`;
+                return;
+            }
+
+            // Update Header
+            document.getElementById('file-ref-display').textContent = activeCase.ref;
+            document.getElementById('file-status-display').textContent = activeCase.status.toUpperCase();
+            document.getElementById('file-officer-display').textContent = activeCase.officer;
+
+            // Render Content
+            const contentElement = document.getElementById('file-content');
+            contentElement.innerHTML = '';
+            
+            activeCase.sections.forEach(section => {
+                let htmlContent = `<h3>${section.title}</h3>`;
+                htmlContent += section.content || '<ul>' + (section.list || []).map(item => `<li>${item}</li>`).join('') + '</ul>';
+                contentElement.innerHTML += htmlContent;
+            });
+        }
+        
+        window.logOutUser = function() {
+            if (confirm("Are you sure you want to log out and terminate the secure session?")) {
+                signOut(auth).then(() => {
+                    updateSystemLog('Session Terminated. User Signed Out.');
+                    recordAudit("SESSION END", { success: true });
+                    window.location.reload(); // Hard reload to reset state and force PIN screen
+                }).catch(error => {
+                    console.error("Logout failed:", error);
+                    updateSystemLog('Logout Failed.', true);
+                });
+            }
+        }
+
+        // --- UTILITY ---
+        function updateTime() {
+            const timeElement = document.getElementById('current-time');
+            if (timeElement) {
+                 const now = new Date();
+                 // Use OVST (CEST) offset for Harrogate/ÖestVèl
+                 const cestOffset = 2; // CEST is UTC+2
+                 const localUtc = now.getTime() + (now.getTimezoneOffset() * 60000);
+                 const ovstTime = new Date(localUtc + (3600000 * cestOffset));
+
+                const formattedTime = ovstTime.toLocaleTimeString('en-GB', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit',
+                    hour12: false
+                }).replace(',', ' ') + ' OVST'; 
+                timeElement.textContent = formattedTime;
+            }
+        }
+
+        // --- INITIALIZATION ---
+        // Start on the System Access Screen
+        document.addEventListener('DOMContentLoaded', () => {
+             updateSystemLog('SYSTEM OFFLINE. AWAITING DCI PIN.');
+        });
+        
+        updateTime();
+        setInterval(updateTime, 1000);
+
+    </script>
 </body>
 </html>
+
