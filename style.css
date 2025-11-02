@@ -1,0 +1,98 @@
+/* Basic Reset */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1e2d40; /* Dark blue/grey background */
+    color: #f0f8ff; /* Off-white text */
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* Header & Footer */
+header {
+    background-color: #0d1a26;
+    color: #ffc107; /* Amber highlight */
+    padding: 20px;
+    text-align: center;
+    border-bottom: 3px solid #ffc107;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+header h2 {
+    margin: 5px 0 0 0;
+    font-size: 1.2em;
+    font-weight: normal;
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #0d1a26;
+    font-size: 0.8em;
+    border-top: 1px dashed #4a5c6e;
+}
+
+/* Main Content (The Case File) */
+#case-file {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: #2a3c50; /* Slightly lighter inner panel */
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.report-section h3 {
+    color: #ffc107; /* Highlight section titles */
+    border-bottom: 2px solid #4a5c6e;
+    padding-bottom: 5px;
+    margin-top: 30px;
+    font-size: 1.4em;
+}
+
+/* Specific Formatting */
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+ul li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+}
+
+ul li::before {
+    content: '→'; /* Custom bullet point */
+    color: #4CAF50; /* Green indicator */
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+}
+
+strong {
+    color: #90ee90; /* Light green for emphasis */
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+    margin: 30px 0;
+}
+
+/* Media Query for smaller screens (PWA experience) */
+@media (max-width: 768px) {
+    #case-file {
+        padding: 15px;
+        margin: 10px;
+    }
+    header h1 {
+        font-size: 1.5em;
+    }
+}
